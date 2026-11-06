@@ -1,18 +1,20 @@
 """Every shop that runs on Shopify, described in one table. A shop that sells both shoes and clothes can have two entries
 sharing a label ("s"): its shoes open under the shoes group and its clothes under another."""
-import collections, re, time
-from common import get_json
+import collections, json, os, re, time
+from common import get, get_json
 from classify import classify, color_families
 
 SHOPS = {
     "renuar":          dict(name="רנואר", base="https://renuar.co.il", tier="afford"),
     "twentyfourseven": dict(name="24/7", base="https://twentyfourseven.co.il", tier="afford"),
     "fox":             dict(name="פוקס", base="https://fox.co.il", tier="afford", strict=True),
-    "mania":           dict(name="מאניה ג'ינס", base="https://www.maniajeans.co.il", tier="chains"),
-    "itaybrands":      dict(name="איתי ברנדס", base="https://itaybrands.co.il", tier="chains"),
+    "mania":           dict(name="מאניה ג'ינס", base="https://www.maniajeans.co.il", tier="chains", family=r"-[^-]+$",
+                            swatch=r'href="/products/([^"]+)"[^>]*title="([^"]+)"\s+aria-label="צבע'),
+    "itaybrands":      dict(name="איתי ברנדס", base="https://itaybrands.co.il", tier="afford", family=r".{4}$",
+                            swatch=r'href="/products/([^"]+)"\s*>\s*<div class="color-swatch" data-tooltip="([^"]+)"'),
     "stevemaddenwear": dict(name="סטיב מאדן", s="stevemadden", base="https://stevemadden.co.il", tier="chains", only="wear"),
     "maskit":          dict(name="משכית", base="https://maskit.com", tier="high"),
-    "replay":          dict(name="ריפליי", base="https://replayjeans.co.il", tier="high"),
+    "replay":          dict(name="ריפליי", base="https://replayjeans.co.il", tier="chains"),
     "mrsomething":     dict(name="Mr Something", base="https://mrsomething.co.il", tier="high", brands=True, skip_vendor=r"^Alchemist$"),
     "storywear":       dict(name="סטורי", s="story", base="https://storyonline.co.il", tier="high", only="wear", brands=True, flat=r"_S_\d+_FNT"),
     "story":           dict(name="סטורי", base="https://storyonline.co.il", tier="shoes", only="shoes", brands=True, flat=r"_S_\d+_FNT"),
@@ -31,7 +33,7 @@ WOMEN = re.compile(r"נשים|לאישה|\bwom[ae]n('?s)?\b|\bladies\b", re.I)
 MEN = re.compile(r"גברים|לגבר|\bm[ae]n('?s)?\b", re.I)
 COLOUR_OPTION = re.compile(r"^(colou?r|צבע|צבעים|color_description)\s*$", re.I)
 # When the name says nothing, the shop's own product type decides (first match wins)
-SKIP_TYPE = re.compile(r"תחתונ|גרבי|כובע|כפפות|בגד.?ים|בגדי.?ים|גלישה|מזווד|ארנק|ביגוד תרמי|חם צוואר|socks|swim|underwear|hat|accessor|אביזר|service|home|אחר", re.I)
+SKIP_TYPE = re.compile(r"תחתונ|גרבי|כובע|כפפות|בגד.?ים|בגדי.?ים|גלישה|מזווד|ארנק|ביגוד תרמי|חם צוואר|\bsocks\b|swim|underwear|\bhats?\b|accessor|אביזר|service|\bhome\b|אחר", re.I)
 BY_TYPE = [
     (r"סניקרס|sneaker", ["shoes", "sneak"]), (r"מגפ", ["shoes", "boots"]), (r"סנדל|כפכפ", ["shoes", "sandal"]), (r"מוקסין", ["shoes", "flats"]),
     (r"נעל|shoes", ["shoes"]), (r"תיק", ["acc", "bag"]), (r"שמל|dress", ["dress"]), (r"חצאי|skirt", ["bottom", "skirt"]),
@@ -42,7 +44,7 @@ BY_TYPE = [
 # Spellings the shops use that the sorter does not know
 SPELL = [(r"^טי(?=\s)", "טי שירט"), (r"קפוצון", "קפוצ'ון"), (r"טרנץ(?!')", "טרנץ'"), (r"(?<![א-ת'])גינס", "ג'ינס"), (r"דגמח", 'מכנס דגמ"ח'),
          (r"סקורט", "חצאית"), (r"סינקרס|סניקס", "סניקרס"), (r"מיולז", "נעלי מיולז"), (r"קבקב", "כפכפ"), (r"(?<![א-ת])מגף", "מגפיים"),
-         (r"\bPant\b", "Pants"), (r"\bTshirt\b", "T-Shirt"), (r"חלצת", "חולצת"), (r"סוויטשירט", "סווטשירט")]
+         (r"''", "'"), (r"טישרט|טישירט", "טי שירט"), (r"מוקסין(?![א-ת])", "מוקסינים"), (r"\bPant\b", "Pants"), (r"\bTshirt\b", "T-Shirt"), (r"חלצת", "חולצת"), (r"סוויטשירט", "סווטשירט")]
 _cache = {}
 
 def _products(base, log):
@@ -83,6 +85,7 @@ class Shop:
         for p in _products(c["base"], log):
             vs = [v for v in p.get("variants", []) if v.get("available")]
             title, ptype, vendor = p["title"], p.get("product_type") or "", (p.get("vendor") or "").strip()
+            hint = ptype or " | ".join(p.get("tags") or [])   # shops without a type often say it in their tags
             if not vs: continue
             if KIDS.search(title) or KIDS.search(vendor) or KIDS.search(ptype) or any(KIDS.fullmatch(t.strip()) for t in p.get("tags") or []):
                 dropped["kids"] += 1; continue
@@ -99,7 +102,7 @@ class Shop:
             price = min(float(v["price"]) for v in vs)
             old = max(float(v.get("compare_at_price") or 0) for v in vs)
             for g in genders:
-                path = _path(title, g, ptype)
+                path = _path(title, g, hint)
                 if not path: unsorted_names.append(title); continue
                 is_shoes = path[0] == "shoes" or path[:2] == ["acc", "bag"]
                 if (c.get("only") == "shoes" and not is_shoes) or (c.get("only") == "wear" and is_shoes):
@@ -107,10 +110,39 @@ class Shop:
                 it = {"s": c.get("s", self.id), "g": g, "p": "/".join(path), "n": title, "pr": price,
                       "c": color_families(cn) or color_families(title), "cn": cn, "img": imgs[0] if imgs else None,
                       "u": f"{c['base']}/products/{p['handle']}"}
+                it["_h"] = p["handle"]
                 if c.get("brands") and vendor: it["v"] = vendor
                 if flat and flat != it["img"]: it["img2"] = flat
                 if old > price + 0.01: it["old"] = old
                 if path == ["bottom", "long"]: it["_d"] = p.get("body_html") or ""
                 items.append(it)
+        self._colours_from_pages(items, log)
         log(f"{self.id}: {len(items)} kept, dropped {dict(dropped)}, not sorted {len(unsorted_names)}: {unsorted_names[:25]}")
         return items
+
+    def _colours_from_pages(self, items, log):
+        """Shops that keep colour only in the swatches of the product page. One page names all the colours of a model, and what was read is kept."""
+        c = self.cfg
+        rx = c.get("swatch")
+        if rx:
+            path = os.path.join(os.environ.get("GLILOT_OUT") or ".", f"colours-{self.id}.json")
+            known = json.load(open(path, encoding="utf-8")) if os.path.exists(path) else {}
+            read, errors = 0, 0
+            for it in items:
+                h = it["_h"]
+                if it["c"] or (h in known and not known[h]): continue
+                if h not in known and read < 3000 and errors < 15:
+                    read += 1
+                    try:
+                        page = get(it["u"], accept="text/html").decode("utf-8", "replace")
+                        known[h] = ""
+                        for sib, name in re.findall(rx, page): known[sib] = name
+                        errors = 0
+                    except Exception as ex:
+                        errors += 1; log(f"   {self.id} colour page failed: {ex}")
+                    time.sleep(0.3)
+                if known.get(h):
+                    it["cn"] = known[h]; it["c"] = color_families(known[h])
+            with open(path, "w", encoding="utf-8") as f: json.dump(known, f, ensure_ascii=False, separators=(",", ":"))
+            log(f"   colours: {read} pages read, {sum(not i['c'] for i in items)} of {len(items)} still without a colour")
+        for it in items: it.pop("_h", None)
