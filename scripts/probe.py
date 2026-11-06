@@ -1,13 +1,19 @@
-"""Print every photo of a few products per Shopify shop, to see which photo shows the item alone.
-Usage: probe.py https://shop.example/ ...  Lines start with IMGS, then the shop, then the photo addresses."""
-import json, os, sys
+"""Show how Shopify shops mark colour and gender on sample products. Usage: probe.py https://shop.example/ ..."""
+import collections, os, re, sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+sys.stdout.reconfigure(encoding="utf-8")
 from common import get_json
+from classify import color_families
 
 for base in sys.argv[1:]:
     base = base.rstrip("/")
-    try: ps = get_json(f"{base}/products.json?limit=250&page=1").get("products") or []
-    except Exception as ex: print("ERR", base, ex); continue
-    ps = [p for p in ps if len(p.get("images", [])) >= 2]
-    for p in ps[len(ps) // 3 :: max(1, len(ps) // 3)][:3]:
-        print("IMGS", json.dumps({"shop": base, "imgs": [i["src"].split("?")[0] for i in p["images"]]}), flush=True)
+    print("=====", base, flush=True)
+    ps = []
+    for page in (1, 2, 3, 4):
+        try: ps += get_json(f"{base}/products.json?limit=250&page={page}").get("products") or []
+        except Exception as ex: print("ERR", ex); break
+    print("tags", collections.Counter(t for p in ps for t in p.get("tags") or []).most_common(60))
+    no = [p for p in ps if not color_families(p["title"])]
+    for p in no[:: max(1, len(no) // 8)][:8]:
+        body = re.sub(r"<[^>]+>|\s+", " ", p.get("body_html") or "")[:160]
+        print("ITEM", p["title"], "|", p.get("vendor"), "|", p["handle"][:50], "|", (p.get("tags") or [])[:14], "|", body, "|", p["variants"][0].get("sku"), flush=True)
