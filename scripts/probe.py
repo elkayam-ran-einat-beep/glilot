@@ -9,6 +9,8 @@ for u in sys.argv[1:]:
     b = get(u, accept="text/html").decode("utf-8", "replace")
     print("=====", u, len(b), flush=True)
     print("words", {c: len(re.findall(c, b)) for c in COL.split("|") if re.search(c, b)})
+    for m in list(re.finditer("שחור|אפור", b))[:4]:
+        print("NEAR", re.sub(r"\s+", " ", b[max(0, m.start()-230):m.end()+120]))
     seen = set()
     for m in re.finditer(rf".{{60}}(?:צבע|colou?r|swatch).{{0,90}}(?:{COL}).{{0,40}}", b, re.I):
         t = re.sub(r"\s+", " ", m.group(0))
