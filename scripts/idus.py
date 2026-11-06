@@ -5,7 +5,7 @@ from classify import classify, color_families
 
 LI = re.compile(r'<li data-unique-selector-key="\d+" id="product_category_(\d+)"(.*?)</form>\s*</li>', re.S)
 
-SUFFIX = re.compile(r"\s+-\s+(בגדים|נעליים|תיקים)\s*$")   # Emanuel adds its department to the photo's name
+SUFFIX = re.compile(r"(?:^|\s+)-\s+(בגדים|נעליים|תיקים)\s*$")   # Emanuel adds its department to the photo's name
 
 def norm(s): return html.unescape(s or "").replace("’", "'").replace("׳", "'").replace("״", '"').strip()
 
@@ -29,7 +29,7 @@ def parse(page, base):
         if prices: old, final = float(prices.group(1)), float(prices.group(2))
         else:
             p = re.search(r'data-price-amount="([\d.]+)"', body); old, final = None, float(p.group(1)) if p else None
-        if not (img and final): continue
+        if not (img and final) or not SUFFIX.sub("", norm(img.group(2))): continue
         s = sku.group(1) if sku else pid
         brand = re.search(r'itemprop="brand">\s*<a[^>]*title="([^"]*)"', body)
         out.append({"id": pid, "name": SUFFIX.sub("", norm(img.group(2))), "brand": norm(brand.group(1)) if brand else "", "img": img.group(1),
