@@ -1,11 +1,11 @@
 """Shoofra (shoofra.co.il, WooCommerce). The shop pages carry everything on the card: name, brand, colour, price, photos.
 Each card is one colour of a shoe."""
-import html, re, time, urllib.parse
+import html, re, time
 from common import get
 from classify import classify, color_families
 
 BASE = "https://www.shoofra.co.il"
-SEX = {"women": "נשים", "men": "גברים"}
+LISTS = (("women", "/shop/woman/shoes/"), ("men", "/shop/man/shoes/"), ("women", "/shop/bags/"))
 CARD = re.compile(r'<li class="product"(.*?)(?=<li class="product"|</ul>\s*</div>\s*<nav|\Z)', re.S)
 
 def attr(block, name):
@@ -14,14 +14,12 @@ def attr(block, name):
 
 def collect(log):
     items, seen, unsorted_names = [], set(), []
-    for g, sex in SEX.items():
-        q = urllib.parse.quote(sex)
+    for g, path_ in LISTS:
         for page in range(1, 120):
-            url = f"{BASE}/shop/page/{page}/?sex={q}" if page > 1 else f"{BASE}/shop/?sex={q}"
-            try: body = get(url, accept="text/html").decode("utf-8", "replace")
-            except Exception as ex: log(f"shoofra {g} p{page}: {ex}"); break
+            try: body = get(f"{BASE}{path_}?page={page}", accept="text/html").decode("utf-8", "replace")
+            except Exception as ex: log(f"shoofra {path_} p{page}: {ex}"); break
             cards = CARD.findall(body)
-            if not cards: break
+            before = len(seen)
             for c in cards:
                 name = attr(c, "name"); pid = attr(c, "product_id"); colour = attr(c, "color")
                 if not name or (pid, colour) in seen: continue
@@ -37,6 +35,7 @@ def collect(log):
                       "c": color_families(colour), "cn": colour, "img": imgs[0], "u": html.unescape(link.group(1))}
                 if max(now, was) > min(now, was or now) + 0.01: it["old"] = max(now, was)
                 items.append(it)
+            if not cards or len(seen) == before: break   # past the last page the shop repeats itself
             time.sleep(0.5)
     log(f"shoofra: {len(items)} kept, {len(unsorted_names)} not sorted, e.g. {unsorted_names[:12]}")
     return items

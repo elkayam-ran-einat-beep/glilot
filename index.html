@@ -216,7 +216,7 @@ const TREE = {
 };
 const PAGE = 48;
 // Each group of shops loads on its own, so a visit downloads only what she opened. Sport stays out of "all of Glilot".
-const TIERS = [{id:"afford",n:"מחירים מאפשרים"},{id:"chains",n:"רשתות"},{id:"high",n:"היי־אנד"},{id:"shoes",n:"נעליים"},{id:"sport",n:"ספורט"}];
+const TIERS = [{id:"afford",n:"מחירים מאפשרים"},{id:"chains",n:"רשתות"},{id:"high",n:"היי־אנד"},{id:"shoes",n:"נעליים ותיקים"},{id:"sport",n:"ספורט"}];
 let ALL = [], STORES = {}, TIER_OF = {}, LOADED = {}, PRESENT = new Set(), LOADING = true, VERSION = "", loadToken = 0;
 let savedView = "model"; try { savedView = localStorage.getItem("glilot-view") || "model"; } catch (e) {}
 let savedTier = ""; try { savedTier = localStorage.getItem("glilot-tier") || ""; } catch (e) {}
@@ -403,7 +403,7 @@ function card(p){
   const store = storeName(p.s);
   const sale = p.old && p.old > p.pr;
   const src = state.view === "product" && p.img2 ? p.img2 : p.img;
-  const vendor = p.s === "factory54" && p.v ? ` <span class="vendor">· ${esc(p.v)}</span>` : "";
+  const vendor = p.v ? ` <span class="vendor">· ${esc(p.v)}</span>` : "";
   return `<article class="card"><a href="${esc(p.u)}" target="_blank" rel="noopener">
     <div class="img">${src ? `<img src="${esc(src)}" alt="${esc(p.n)}" loading="lazy" referrerpolicy="no-referrer">` : ""}${p.new ? '<span class="badge">חדש</span>' : ""}</div>
     <div class="brand">${esc(store)}${vendor}</div>
@@ -558,7 +558,7 @@ async function ensure(stores){
     for (const p of list) {
       if (p.p === "bottom/long") p.p = "bottom/long/nocut";
       const img = (p.img || "").split("?")[0];
-      const k1 = p.s + "|" + (img || p.u), k2 = p.s + "|" + p.n + "|" + (p.cn || "") + "|" + p.pr;
+      const k1 = p.g + "|" + p.s + "|" + (img || p.u), k2 = p.g + "|" + p.s + "|" + p.n + "|" + (p.cn || "") + "|" + p.pr;
       if (seen.has(k1) || seen.has(k2)) continue;
       seen.add(k1); seen.add(k2); kept.push(p);
     }

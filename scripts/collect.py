@@ -3,16 +3,19 @@ Usage: python collect.py [store ...]   (default: every store)"""
 import json, os, sys, collections, datetime, importlib
 HERE = os.path.dirname(os.path.abspath(__file__)); sys.path.insert(0, HERE)
 from cuts import refine
+from shopify import SHOPS, Shop
 OUT = os.environ.get("GLILOT_OUT") or os.path.join(HERE, "..", "data")
 STORES = {"zara": "זארה", "golf": "גולף", "castro": "קסטרו", "crazyline": "קרייזי ליין", "massimodutti": "מסימו דוטי",
-          "factory54": "פקטורי 54", "interfashion": "אינטרפאשן"}
+          "factory54": "פקטורי 54", "interfashion": "אינטרפאשן", "shoofra": "שופרא",
+          **{k: v["name"] for k, v in SHOPS.items()}}
 # labels for store ids that a module emits besides its own (Factory 54 carries brands that have their own Glilot store)
 NAMES = {"tommy": "טומי הילפיגר", "ralph": "ראלף לורן", "ck": "קלווין קליין", "lacoste": "לקוסט",
          "tezenis": "טזניס", "calzedonia": "קלצדוניה", "intimissimi": "אינטימיסימי"}
 
 # Which group each shop opens under in the portal
 TIERS = {"zara": "chains", "golf": "chains", "castro": "chains", "crazyline": "chains", "interfashion": "chains",
-         "massimodutti": "high", "factory54": "high"}
+         "massimodutti": "high", "factory54": "high", "shoofra": "shoes",
+         **{k: v["tier"] for k, v in SHOPS.items()}}
 
 def log(m): print(m, flush=True)
 
@@ -22,7 +25,7 @@ def main(names):
     index = json.load(open(idx_path, encoding="utf-8")) if os.path.exists(idx_path) else {"stores": {}}
     for s in names:
         try:
-            module = importlib.import_module(s)
+            module = Shop(s) if s in SHOPS else importlib.import_module(s)
             items = module.collect(log)
             refine(items, module, s, OUT, log)
         except Exception as ex:
