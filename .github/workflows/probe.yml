@@ -1,0 +1,14 @@
+name: probe
+on:
+  workflow_dispatch:
+    inputs:
+      args: {description: "arguments for scripts/probe.py", required: false}
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - env:
+          ARGS: ${{ github.event.inputs.args }}
+        run: python3 scripts/probe.py $ARGS
