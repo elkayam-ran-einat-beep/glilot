@@ -1,9 +1,11 @@
-"""Israeli Magento shops built on the same template (Golf, Castro, Crazy Line): read category listing pages."""
+"""Israeli Magento shops built on the same template (Golf, Castro, Crazy Line, Delta, Emanuel, Top Ten): read category listing pages."""
 import re, html, json, time
 from common import get
 from classify import classify, color_families
 
 LI = re.compile(r'<li data-unique-selector-key="\d+" id="product_category_(\d+)"(.*?)</form>\s*</li>', re.S)
+
+SUFFIX = re.compile(r"\s+-\s+(בגדים|נעליים|תיקים)\s*$")   # Emanuel adds its department to the photo's name
 
 def norm(s): return html.unescape(s or "").replace("’", "'").replace("׳", "'").replace("״", '"').strip()
 
@@ -29,7 +31,8 @@ def parse(page, base):
             p = re.search(r'data-price-amount="([\d.]+)"', body); old, final = None, float(p.group(1)) if p else None
         if not (img and final): continue
         s = sku.group(1) if sku else pid
-        out.append({"id": pid, "name": norm(img.group(2)), "img": img.group(1),
+        brand = re.search(r'itemprop="brand">\s*<a[^>]*title="([^"]*)"', body)
+        out.append({"id": pid, "name": SUFFIX.sub("", norm(img.group(2))), "brand": norm(brand.group(1)) if brand else "", "img": img.group(1),
                     "url": link.group(1) if link else f"{base}/{s}", "hex": hexc, "cn": cn,
                     "pr": round(final, 2), "old": round(old, 2) if old and old > final + 0.01 else None,
                     "oos": 'product_outofstock="true"' in body})
@@ -47,7 +50,7 @@ def merge(name_path, cat_path):
     if cat_path and len(cat_path) > len(name_path) and cat_path[:len(name_path)] == name_path: return cat_path
     return name_path
 
-def run(store, base, cats, log, pages=60):
+def run(store, base, cats, log, pages=60, brands=False):
     items, seen = [], set()
     for path, (g, fallback) in cats.items():
         n = kept = 0
@@ -64,6 +67,7 @@ def run(store, base, cats, log, pages=60):
                 it = {"s": store, "g": g, "p": "/".join(cpath), "n": r["name"], "pr": r["pr"],
                       "c": color_families(r["cn"], r["hex"]), "cn": r["cn"], "img": r["img"], "u": r["url"]}
                 if r["old"]: it["old"] = r["old"]
+                if brands and r["brand"]: it["v"] = r["brand"]
                 items.append(it); kept += 1
             time.sleep(0.5)
         log(f"{store} {g} {path}: {n} listed, {kept} kept")
