@@ -1,0 +1,225 @@
+{
+ "stores": {
+  "zara": {
+   "name": "זארה",
+   "count": 11759,
+   "updated": "2026-11-07T07:19Z"
+  },
+  "golf": {
+   "name": "גולף",
+   "count": 953,
+   "updated": "2026-11-07T07:23Z"
+  },
+  "factory54": {
+   "name": "פקטורי 54",
+   "count": 7591,
+   "updated": "2026-11-07T07:48Z"
+  },
+  "crazyline": {
+   "name": "קרייזי ליין",
+   "count": 1692,
+   "updated": "2026-11-07T07:45Z"
+  },
+  "castro": {
+   "name": "קסטרו",
+   "count": 1781,
+   "updated": "2026-11-07T07:36Z"
+  },
+  "massimodutti": {
+   "name": "מסימו דוטי",
+   "count": 6472,
+   "updated": "2026-11-07T07:47Z"
+  },
+  "interfashion": {
+   "name": "אינטרפאשן",
+   "count": 879,
+   "updated": "2026-11-07T07:49Z"
+  },
+  "renuar": {
+   "name": "רנואר",
+   "count": 962,
+   "updated": "2026-11-07T08:02Z"
+  },
+  "twentyfourseven": {
+   "name": "24/7",
+   "count": 877,
+   "updated": "2026-11-07T08:02Z"
+  },
+  "fox": {
+   "name": "פוקס",
+   "count": 898,
+   "updated": "2026-11-07T08:02Z"
+  },
+  "mania": {
+   "name": "מאניה ג'ינס",
+   "count": 1434,
+   "updated": "2026-11-07T08:02Z"
+  },
+  "itaybrands": {
+   "name": "איתי ברנדס",
+   "count": 2607,
+   "updated": "2026-11-07T08:03Z"
+  },
+  "stevemaddenwear": {
+   "name": "סטיב מאדן",
+   "count": 608,
+   "updated": "2026-11-07T08:03Z"
+  },
+  "maskit": {
+   "name": "משכית",
+   "count": 388,
+   "updated": "2026-11-07T08:03Z"
+  },
+  "replay": {
+   "name": "ריפליי",
+   "count": 5604,
+   "updated": "2026-11-07T08:04Z"
+  },
+  "mrsomething": {
+   "name": "Mr Something",
+   "count": 627,
+   "updated": "2026-11-07T08:04Z"
+  },
+  "storywear": {
+   "name": "סטורי",
+   "count": 2255,
+   "updated": "2026-11-07T08:04Z"
+  },
+  "story": {
+   "name": "סטורי",
+   "count": 994,
+   "updated": "2026-11-07T08:04Z"
+  },
+  "stevemadden": {
+   "name": "סטיב מאדן",
+   "count": 2086,
+   "updated": "2026-11-07T08:04Z"
+  },
+  "originals": {
+   "name": "אוריג'ינלס",
+   "count": 2591,
+   "updated": "2026-11-07T08:04Z"
+  },
+  "tikhatikim": {
+   "name": "תיק התיקים",
+   "count": 421,
+   "updated": "2026-11-07T08:04Z"
+  },
+  "shoofra": {
+   "name": "שופרא",
+   "count": 1414,
+   "updated": "2026-11-07T07:50Z"
+  },
+  "footlocker": {
+   "name": "פוט לוקר",
+   "count": 3563,
+   "updated": "2026-11-07T08:05Z"
+  },
+  "megasport": {
+   "name": "מגה ספורט",
+   "count": 1042,
+   "updated": "2026-11-07T08:05Z"
+  },
+  "columbia": {
+   "name": "קולומביה",
+   "count": 1227,
+   "updated": "2026-11-07T08:05Z"
+  },
+  "ripcurl": {
+   "name": "ריפ קרל",
+   "count": 632,
+   "updated": "2026-11-07T08:05Z"
+  },
+  "delta": {
+   "name": "דלתא",
+   "count": 164,
+   "updated": "2026-11-07T07:51Z"
+  },
+  "emanuelwear": {
+   "name": "עמנואל",
+   "count": 1245,
+   "updated": "2026-11-07T07:58Z"
+  },
+  "emanuel": {
+   "name": "עמנואל",
+   "count": 582,
+   "updated": "2026-11-07T08:02Z"
+  },
+  "topten": {
+   "name": "טופ טן",
+   "count": 96,
+   "updated": "2026-11-07T08:02Z"
+  }
+ },
+ "names": {
+  "zara": "זארה",
+  "golf": "גולף",
+  "castro": "קסטרו",
+  "crazyline": "קרייזי ליין",
+  "massimodutti": "מסימו דוטי",
+  "factory54": "פקטורי 54",
+  "interfashion": "אינטרפאשן",
+  "shoofra": "שופרא",
+  "delta": "דלתא",
+  "emanuelwear": "עמנואל",
+  "emanuel": "עמנואל",
+  "topten": "טופ טן",
+  "renuar": "רנואר",
+  "twentyfourseven": "24/7",
+  "fox": "פוקס",
+  "mania": "מאניה ג'ינס",
+  "itaybrands": "איתי ברנדס",
+  "stevemaddenwear": "סטיב מאדן",
+  "maskit": "משכית",
+  "replay": "ריפליי",
+  "mrsomething": "Mr Something",
+  "storywear": "סטורי",
+  "story": "סטורי",
+  "stevemadden": "סטיב מאדן",
+  "originals": "אוריג'ינלס",
+  "tikhatikim": "תיק התיקים",
+  "footlocker": "פוט לוקר",
+  "megasport": "מגה ספורט",
+  "columbia": "קולומביה",
+  "ripcurl": "ריפ קרל",
+  "tommy": "טומי הילפיגר",
+  "ralph": "ראלף לורן",
+  "ck": "קלווין קליין",
+  "lacoste": "לקוסט",
+  "tezenis": "טזניס",
+  "calzedonia": "קלצדוניה",
+  "intimissimi": "אינטימיסימי"
+ },
+ "tiers": {
+  "zara": "chains",
+  "golf": "chains",
+  "castro": "chains",
+  "crazyline": "chains",
+  "interfashion": "chains",
+  "massimodutti": "high",
+  "factory54": "high",
+  "shoofra": "shoes",
+  "delta": "afford",
+  "emanuelwear": "high",
+  "emanuel": "shoes",
+  "topten": "shoes",
+  "renuar": "afford",
+  "twentyfourseven": "afford",
+  "fox": "afford",
+  "mania": "chains",
+  "itaybrands": "afford",
+  "stevemaddenwear": "chains",
+  "maskit": "high",
+  "replay": "chains",
+  "mrsomething": "high",
+  "storywear": "high",
+  "story": "shoes",
+  "stevemadden": "shoes",
+  "originals": "shoes",
+  "tikhatikim": "shoes",
+  "footlocker": "sport",
+  "megasport": "sport",
+  "columbia": "sport",
+  "ripcurl": "sport"
+ }
+}

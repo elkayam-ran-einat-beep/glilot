@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>פורטל אופנה ביג גלילות</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:wght@500&family=Heebo:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+/* Layout: Zara-style minimal catalogue. Top bar with gender tabs, category rail (drawer on phones), chips for sub-cuts, filter row, product grid. Single light theme by choice. */
+:root{
+  --paper:#ffffff;
+  --ink:#111111;
+  --muted:#77736e;
+  --line:#e4e1dc;
+  --soft:#f4f2ee;
+  --accent:#111111;
+  --font-display:"Bodoni Moda","Didot",Georgia,serif;
+  --font-body:"Heebo","Arial Hebrew","Segoe UI",Arial,sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{margin:0}
+body{background:var(--paper);color:var(--ink);font-family:var(--font-body);font-weight:300;font-size:14px;line-height:1.5}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;padding:0}
+button:focus-visible,select:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+
+.notice{background:var(--soft);border-bottom:1px solid var(--line);padding:8px 16px;font-size:12px;color:var(--muted);text-align:center}
+
+header{position:sticky;top:0;z-index:20;background:var(--paper);border-bottom:1px solid var(--line)}
+.bar{display:flex;align-items:center;gap:16px;padding:14px 16px}
+.menu-btn{display:none;width:28px;height:20px;position:relative}
+.menu-btn span{position:absolute;right:0;left:0;height:1.5px;background:var(--ink)}
+.menu-btn span:nth-child(1){top:2px}.menu-btn span:nth-child(2){top:9px}.menu-btn span:nth-child(3){top:16px}
+.logo{font-family:var(--font-display);font-size:30px;letter-spacing:.14em;line-height:1;direction:ltr}
+.logo small{display:block;font-family:var(--font-body);font-size:9px;letter-spacing:.35em;font-weight:500;margin-top:4px;text-align:center}
+.genders{display:flex;gap:20px;margin-inline-start:auto}
+.genders button{font-size:13px;font-weight:500;letter-spacing:.08em;padding-bottom:3px;border-bottom:1.5px solid transparent}
+.genders button[aria-pressed="true"]{border-color:var(--ink)}
+
+.tiers{display:flex;gap:22px;padding:0 16px 10px;overflow-x:auto;scrollbar-width:none}
+.tiers::-webkit-scrollbar{display:none}
+.tiers button{flex:none;font-size:13px;letter-spacing:.04em;padding-bottom:3px;border-bottom:1.5px solid transparent;color:var(--muted)}
+.tiers button[aria-pressed="true"]{color:var(--ink);font-weight:500;border-color:var(--ink)}
+.shell{display:grid;grid-template-columns:230px 1fr;gap:32px;padding:24px 16px 48px;max-width:1400px;margin:0 auto}
+nav.rail{position:sticky;top:120px;align-self:start;max-height:calc(100vh - 110px);overflow:auto}
+.rail h3{font-size:11px;font-weight:500;letter-spacing:.15em;color:var(--muted);margin:0 0 10px}
+.tree{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px}
+.tree .tree{padding-inline-start:14px;margin:2px 0 6px}
+.tree button{display:block;width:100%;text-align:right;padding:4px 0;font-size:13px}
+.tree button.top{font-weight:500;letter-spacing:.04em}
+.tree button[aria-current="true"]{font-weight:700;text-decoration:underline;text-underline-offset:4px}
+
+main{min-width:0}
+.crumbs{font-size:12px;color:var(--muted);margin-bottom:6px;display:flex;flex-wrap:wrap;gap:6px}
+.crumbs button{color:var(--muted)}
+.crumbs button:hover{color:var(--ink)}
+h1{font-size:22px;font-weight:500;letter-spacing:.06em;margin:0 0 14px;text-wrap:balance}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
+.chip{border:1px solid var(--line);padding:6px 14px;font-size:12px;letter-spacing:.04em}
+.chip:hover{border-color:var(--ink)}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+
+.filters{display:flex;flex-wrap:wrap;align-items:center;gap:14px 24px;padding:12px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);margin-bottom:20px}
+.filters .label{font-size:11px;font-weight:500;letter-spacing:.12em;color:var(--muted)}
+.swatches{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.sw{width:22px;height:22px;border-radius:50%;border:1px solid var(--line);position:relative}
+.sw[aria-pressed="true"]{outline:1.5px solid var(--ink);outline-offset:2px}
+.group{display:flex;align-items:center;gap:10px}
+select{font:inherit;font-size:13px;border:1px solid var(--line);background:var(--paper);padding:5px 8px;color:var(--ink)}
+.count{margin-inline-start:auto;font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+.clear{font-size:12px;text-decoration:underline;text-underline-offset:3px}
+
+.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:28px 14px}
+.card{display:flex;flex-direction:column;gap:8px}
+.img{aspect-ratio:3/4;position:relative;display:flex;align-items:flex-end;justify-content:flex-start;padding:10px;overflow:hidden}
+.img.light{box-shadow:inset 0 0 0 1px var(--line)}
+.img svg{position:absolute;inset:0;margin:auto;width:46%;height:46%;opacity:.28}
+.tag{position:relative;font-size:10px;letter-spacing:.12em;background:rgba(255,255,255,.85);color:var(--ink);padding:2px 6px}
+.brand{font-size:11px;font-weight:500;letter-spacing:.12em}
+.name{font-size:13px}
+.meta{display:flex;justify-content:space-between;font-size:13px;font-variant-numeric:tabular-nums}
+.meta .c{color:var(--muted);font-size:12px}
+.empty{padding:60px 0;text-align:center;color:var(--muted)}
+
+.colorchips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
+.colorchips:empty{display:none}
+.colorchips .chip,.tree .cbtn{display:inline-flex;align-items:center;gap:7px}
+.dot{width:11px;height:11px;border-radius:50%;border:1px solid var(--line);flex:none;display:inline-block}
+.tree .cbtn{font-size:12px}
+.n{color:var(--muted);font-size:11px;font-variant-numeric:tabular-nums}
+.chip[aria-pressed="true"] .n{color:inherit}
+.understood{font-size:13px;margin:0 0 14px;color:var(--muted)}
+.understood:empty{display:none}
+.understood b{font-weight:500;color:var(--ink)}
+.understood button{display:block;margin-top:6px;text-decoration:underline;text-underline-offset:3px;color:var(--ink);text-align:right}
+.updated{font-size:11px;color:var(--muted);letter-spacing:.04em;margin-top:28px}
+.search{flex:1 1 140px;max-width:260px;min-width:0;border:0;border-bottom:1px solid var(--ink);padding:4px 2px;font:inherit;font-size:13px;background:transparent;color:var(--ink);border-radius:0}
+.search:focus-visible{outline:none;border-bottom-width:2px}
+.card a{color:inherit;text-decoration:none;display:flex;flex-direction:column;gap:8px}
+.img{background:var(--soft)}
+.img img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.price-old{color:var(--muted);text-decoration:line-through;margin-inline-start:6px;font-size:12px}
+.price-sale{color:#a3252a}
+.badge{position:absolute;top:8px;right:8px;font-size:10px;letter-spacing:.12em;background:var(--paper);padding:2px 6px}
+.shown{text-align:center;font-size:12px;color:var(--muted);margin-top:28px;font-variant-numeric:tabular-nums}
+.more{overflow-anchor:none;display:block;margin:12px auto 0;border:1px solid var(--ink);padding:10px 28px;font-size:12px;letter-spacing:.12em}
+.more:hover{background:var(--ink);color:var(--paper)}
+.loading{padding:80px 0;text-align:center;color:var(--muted)}
+.views{display:flex;border:1px solid var(--line)}
+.views button{padding:5px 12px;font-size:12px;letter-spacing:.06em}
+.views button[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
+.grid.product .img{background:#fff}
+.grid.product .img img{object-fit:contain;padding:6%}
+.vendor{color:var(--muted);font-weight:400}
+
+.scrim{display:none}
+@media (max-width:1000px){.grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (max-width:760px){
+  .shell{grid-template-columns:1fr;padding-top:16px}
+  .menu-btn{display:block}
+  .logo{font-size:24px}
+  .bar{flex-wrap:wrap}
+  .search{order:9;flex:1 1 100%;max-width:none;font-size:16px}
+  .colorchips{flex-wrap:nowrap;overflow-x:auto;padding-bottom:4px}
+  .colorchips .chip{flex:none}
+  nav.rail{position:fixed;top:0;right:0;bottom:0;width:min(82vw,320px);max-height:none;background:var(--paper);z-index:40;padding:24px 20px;transform:translateX(100%);transition:transform .25s ease;border-left:1px solid var(--line)}
+  nav.rail.open{transform:none}
+  .scrim.open{display:block;position:fixed;inset:0;background:rgba(0,0,0,.25);z-index:30}
+  .grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:22px 10px}
+  .count{margin-inline-start:0;width:100%}
+}
+@media (prefers-reduced-motion:reduce){nav.rail{transition:none}}
+</style>
+</head>
+<body>
+<header>
+  <div class="bar">
+    <button class="menu-btn" id="menuBtn" aria-label="פתיחת תפריט הקטגוריות"><span></span><span></span><span></span></button>
+    <div class="logo">GLILOT<small>BIG FASHION</small></div>
+    <input class="search" id="search" type="search" placeholder="מכנסיים שחורים וייד לג" aria-label="חיפוש פריט">
+    <div class="genders" role="group" aria-label="מחלקה">
+      <button id="g-women" data-g="women" aria-pressed="true">נשים</button>
+      <button id="g-men" data-g="men" aria-pressed="false">גברים</button>
+    </div>
+  </div>
+  <div class="tiers" id="tiers" role="group" aria-label="סוג החנויות"></div>
+</header>
+<div class="scrim" id="scrim"></div>
+<div class="shell">
+  <nav class="rail" id="rail" aria-label="קטגוריות">
+    <h3>קטגוריות</h3>
+    <ul class="tree" id="tree"></ul>
+  </nav>
+  <main>
+    <div class="crumbs" id="crumbs"></div>
+    <h1 id="title"></h1>
+    <div class="chips" id="chips"></div>
+    <div class="colorchips" id="colorChips"></div>
+    <p class="understood" id="understood"></p>
+    <div class="filters">
+      <div class="group" id="colorGroup"><span class="label">צבע</span><div class="swatches" id="swatches"></div></div>
+      <div class="group"><label class="label" for="brandSel">חנות</label><select id="brandSel"></select></div>
+      <div class="group"><label class="label" for="sortSel">מיון</label>
+        <select id="sortSel"><option value="new">חדש</option><option value="low">מחיר: מהנמוך</option><option value="high">מחיר: מהגבוה</option></select></div>
+      <div class="group"><span class="label">תצוגה</span><div class="views" role="group" aria-label="תצוגת תמונות">
+        <button id="viewModel" data-v="model" aria-pressed="true">דוגמנית</button><button id="viewProduct" data-v="product" aria-pressed="false">פריט</button></div></div>
+      <button class="clear" id="clearBtn">ניקוי סינונים</button>
+      <span class="count" id="count"></span>
+    </div>
+    <div class="grid" id="grid"><div class="loading" style="grid-column:1/-1">טוען פריטים…</div></div>
+    <p class="shown" id="shownNote"></p>
+    <button class="more" id="moreBtn" hidden>עוד פריטים</button>
+    <p class="updated" id="updated"></p>
+  </main>
+</div>
+
+<script>
+const COLORS = [
+  {id:"black",n:"שחור",h:"#1b1b1b"},{id:"white",n:"לבן",h:"#fbfbf9"},{id:"ecru",n:"שמנת",h:"#ece4d4"},{id:"beige",n:"בז'",h:"#cfb99a"},
+  {id:"brown",n:"חום",h:"#6e4b35"},{id:"grey",n:"אפור",h:"#9a9893"},{id:"navy",n:"כחול נייבי",h:"#23304a"},{id:"blue",n:"כחול",h:"#5f7fa6"},
+  {id:"green",n:"ירוק",h:"#6b6a3f"},{id:"red",n:"אדום",h:"#a3252a"},{id:"burgundy",n:"בורדו",h:"#5e1a26"},{id:"pink",n:"ורוד",h:"#e3b5b8"},
+  {id:"yellow",n:"צהוב",h:"#e2c443"},{id:"orange",n:"כתום",h:"#d07a3a"},{id:"purple",n:"סגול",h:"#7d5a8c"},
+  {id:"metal",n:"מטאלי",h:"linear-gradient(135deg,#d9d4c7,#a8915a)"},{id:"print",n:"הדפס",h:"linear-gradient(135deg,#1b1b1b 0 33%,#e3b5b8 33% 66%,#5f7fa6 66%)"}
+];
+const TREE = {
+  women:[
+    {id:"top",n:"חלק עליון",kids:[{id:"tee",n:"טישירטים"},{id:"tank",n:"גופיות"},{id:"croptop",n:"טופים"},{id:"blouse",n:"חולצות"},
+      {id:"shirt",n:"חולצות מכופתרות"},{id:"knit",n:"סריגים"},{id:"hood",n:"סווטשירטים וקפוצ'ונים"},{id:"body",n:"בגדי גוף"},{id:"vest",n:"וסטים"}]},
+    {id:"bottom",n:"מכנסיים וחצאיות",kids:[
+      {id:"long",n:"מכנסיים ארוכים",kids:[{id:"wide",n:"ווייד לג"},{id:"skinny",n:"סקיני"},{id:"straight",n:"סטרייט"},{id:"flare",n:"מתרחב"},
+        {id:"baggy",n:"בגי / בלון / מום"},{id:"tapered",n:"טייפרד"},{id:"cargo",n:"קרגו"},{id:"tailored",n:"מחויט"},{id:"jogger",n:"טרנינג"},{id:"legging",n:"טייץ"},{id:"nocut",n:"ללא גזרה ספציפית"}]},
+      {id:"short",n:"מכנסיים קצרים",kids:[{id:"sdenim",n:"ג'ינס קצר"},{id:"berm",n:"ברמודה"},{id:"stail",n:"בד"}]},
+      {id:"skirt",n:"חצאית",kids:[{id:"mini",n:"מיני"},{id:"midi",n:"מידי"},{id:"maxi",n:"מקסי"}]}]},
+    {id:"dress",n:"שמלות ואוברולים",kids:[{id:"dmini",n:"שמלות מיני"},{id:"dmidi",n:"שמלות מידי"},{id:"dmaxi",n:"שמלות מקסי"},{id:"jump",n:"אוברולים"}]},
+    {id:"coat",n:"מעילים"},
+    {id:"jacket",n:"ג'קטים",kids:[{id:"blazer",n:"בלייזרים"},{id:"jleather",n:"עור"},{id:"jdenim",n:"ג'ינס"},{id:"bomber",n:"בומבר"},{id:"puffer",n:"פוך ומרופדים"}]},
+    {id:"shoes",n:"נעליים",kids:[{id:"sneak",n:"סניקרס"},{id:"boots",n:"מגפיים"},{id:"heels",n:"עקבים"},{id:"flats",n:"שטוחות"},{id:"sandal",n:"סנדלים"}]},
+    {id:"acc",n:"תיקים וחגורות",kids:[{id:"bag",n:"תיקים"},{id:"belt",n:"חגורות"}]}
+  ],
+  men:[
+    {id:"top",n:"חלק עליון",kids:[{id:"tee",n:"טישירטים"},{id:"polo",n:"פולו"},{id:"shirt",n:"חולצות מכופתרות"},{id:"knit",n:"סריגים"},
+      {id:"hood",n:"סווטשירטים וקפוצ'ונים"},{id:"vest",n:"וסטים"}]},
+    {id:"bottom",n:"מכנסיים וחצאיות",kids:[
+      {id:"long",n:"מכנסיים ארוכים",kids:[{id:"skinny",n:"סקיני"},{id:"slim",n:"סלים"},{id:"straight",n:"סטרייט"},{id:"relaxed",n:"רחב / בלון"},
+        {id:"tapered",n:"טייפרד"},{id:"chino",n:"צ'ינו"},{id:"cargo",n:"קרגו"},{id:"tailored",n:"מחויט"},{id:"jogger",n:"טרנינג"},{id:"nocut",n:"ללא גזרה ספציפית"}]},
+      {id:"short",n:"מכנסיים קצרים",kids:[{id:"berm",n:"ברמודה"},{id:"sdenim",n:"ג'ינס קצר"},{id:"sport",n:"ספורט"}]}]},
+    {id:"coat",n:"מעילים"},
+    {id:"jacket",n:"ג'קטים",kids:[{id:"blazer",n:"בלייזרים"},{id:"jleather",n:"עור"},{id:"jdenim",n:"ג'ינס"},{id:"bomber",n:"בומבר"},{id:"puffer",n:"פוך ומרופדים"}]},
+    {id:"shoes",n:"נעליים",kids:[{id:"sneak",n:"סניקרס"},{id:"dress",n:"נעליים אלגנטיות"},{id:"boots",n:"מגפיים"},{id:"sandal",n:"סנדלים"}]},
+    {id:"acc",n:"תיקים וחגורות",kids:[{id:"bag",n:"תיקים"},{id:"belt",n:"חגורות"}]}
+  ]
+};
+const PAGE = 48;
+// Each group of shops loads on its own, so a visit downloads only what she opened. Sport stays out of "all of Glilot".
+const TIERS = [{id:"afford",n:"מחירים מאפשרים"},{id:"chains",n:"רשתות"},{id:"high",n:"היי־אנד"},{id:"shoes",n:"נעליים ותיקים"},{id:"sport",n:"ספורט"}];
+let ALL = [], STORES = {}, TIER_OF = {}, LOADED = {}, PRESENT = new Set(), LOADING = true, VERSION = "", loadToken = 0;
+let savedView = "model"; try { savedView = localStorage.getItem("glilot-view") || "model"; } catch (e) {}
+let savedTier = ""; try { savedTier = localStorage.getItem("glilot-tier") || ""; } catch (e) {}
+const state = { tier:savedTier, everywhere:false, g:"women", path:["bottom","long"], colors:new Set(), store:"", sort:"new", q:"", shown:PAGE, view:savedView };
+let NAMES = {}, CURRENT = [];
+const storeName = s => NAMES[s] || STORES[s]?.name || s;
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+function nodeAt(g, path){
+  let list = TREE[g], trail = [];
+  for (const id of path) { const node = list.find(n => n.id === id); if (!node) break; trail.push(node); list = node.kids || []; }
+  return trail;
+}
+function readHash(){
+  const parts = decodeURIComponent(location.hash.slice(1)).split("-").filter(Boolean);
+  if (TIERS.some(t => t.id === parts[0])) state.tier = parts.shift();
+  if (parts[0] === "women" || parts[0] === "men") {
+    state.g = parts[0];
+    const trail = nodeAt(state.g, parts.slice(1));
+    state.path = trail.length ? parts.slice(1, 1 + trail.length) : [TREE[state.g][0].id];
+    const colour = parts[1 + trail.length];
+    if (COLORS.some(c => c.id === colour)) state.colors = new Set([colour]);
+  }
+}
+// The cut pages of long trousers have a third level: colour
+const isCutPage = path => path.length === 3 && path[0] === "bottom" && path[1] === "long";
+function writeHash(){
+  const colour = isCutPage(state.path) && state.colors.size === 1 ? [...state.colors] : [];
+  history.replaceState(null, "", "#" + [state.tier, state.g].filter(Boolean).concat(state.path, colour).join("-"));
+}
+function go(path){ state.path = path; state.shown = PAGE; state.q = ""; $("search").value = ""; backToTier(); writeHash(); render(); }
+function pickColour(id){ state.colors = state.colors.has(id) && state.colors.size === 1 ? new Set() : new Set([id]); state.shown = PAGE; writeHash(); render(); }
+function colourCounts(key){
+  const m = {};
+  for (const p of ALL) if (p.g === state.g && p.p === key) for (const c of p.c) m[c] = (m[c] || 0) + 1;
+  return COLORS.filter(c => m[c.id]).map(c => ({...c, count: m[c.id]}));
+}
+
+// ---- Smart search: "מכנסיים שחורים וייד לג" becomes type + colour + cut, and whatever is left is matched as plain words
+const norm = s => String(s || "").toLowerCase().replace(/[׳’`]/g, "'").replace(/[״”]/g, '"').replace(/[-–_|,.]/g, " ").replace(/\s+/g, " ").trim();
+const Q_TYPES = [
+  ["bottom/short/sdenim", "ג'ינס קצר,ג'ינסים קצרים,גינס קצר"],
+  ["bottom/short", "מכנסיים קצרים,מכנסים קצרים,מכנס קצר,מכנסי קצר,שורט,שורטס,ברמודה,ברמודות,shorts,bermuda"],
+  ["bottom/long", "מכנסיים ארוכים,מכנסים ארוכים,מכנס ארוך,מכנסיים,מכנסים,מכנס,מכנסי,pants,trousers"],
+  ["bottom/skirt", "חצאית,חצאיות,skirt,skirts"],
+  ["dress/jump", "אוברול,אוברולים,סרבל,jumpsuit"],
+  ["dress", "שמלה,שמלת,שמלות,dress,dresses"],
+  ["top/tee", "טי שירט,טישירט,טישרט,טישירטים,טי שירטים,t shirt,tshirt"],
+  ["top/tank", "גופיה,גופייה,גופיות"],
+  ["top/croptop", "טופ,טופים"],
+  ["top/shirt", "חולצה מכופתרת,חולצות מכופתרות,מכופתרת,מכופתרות,שירט מכופתר"],
+  ["top/knit", "סריג,סריגים,סוודר,סוודרים,קרדיגן,קרדיגנים"],
+  ["top/hood", "קפוצ'ון,קפוצ'ונים,סווטשירט,סווטשירטים,hoodie"],
+  ["top/body", "בגד גוף,בגדי גוף,בודי"],
+  ["top/vest", "וסט,וסטים"],
+  ["top/polo", "פולו"],
+  ["top", "חולצה,חולצת,חולצות,shirt,shirts,top"],
+  ["coat", "מעיל,מעילים,coat"],
+  ["jacket/blazer", "בלייזר,בלייזרים,blazer"],
+  ["jacket", "ג'קט,ג'קטים,ז'קט,ז'קטים,jacket"],
+  ["shoes/sneak", "סניקרס,sneakers"],
+  ["shoes/boots", "מגף,מגפיים,מגפונים,boots"],
+  ["shoes/heels", "עקב,עקבים,heels"],
+  ["shoes/sandal", "סנדל,סנדלים,כפכפים"],
+  ["shoes/flats", "בלרינה,בלרינות,מוקסין,מוקסינים,לואפרס"],
+  ["shoes", "נעל,נעלי,נעליים,shoes"],
+  ["acc/bag", "תיק,תיקים,bag,bags"],
+  ["acc/belt", "חגורה,חגורות,belt,belts"]
+];
+const Q_CUTS = [
+  ["nocut", "ללא גזרה,בלי גזרה,ללא גזרה ספציפית"],
+  ["wide", "וייד לג,ווייד לג,ויד לג,וויד לג,wide leg,wide,וייד,ווייד,רחב,רחבים,רחבה,רחבות,פלאצו,פאלאצו,palazzo"],
+  ["skinny", "סקיני,צמוד,צמודים,צר,צרים,skinny"],
+  ["slim", "סלים,slim"],
+  ["straight", "סטרייט,ישר,ישרים,ישרה,רגולר,straight"],
+  ["flare", "מתרחב,מתרחבים,מתרחבת,פלייר,בוטקאט,flare,bootcut"],
+  ["baggy", "בגי,באגי,בלון,מום,מאם,בארל,baggy,balloon,barrel,mom,רלוקסד,רלקסד"],
+  ["relaxed", "רילקסד,relaxed"],
+  ["tapered", "טייפרד,מחודד,מתחדד,tapered"],
+  ["cargo", "קרגו,דגמ\"ח,cargo"],
+  ["chino", "צ'ינו,chino"],
+  ["tailored", "מחויט,מחויטים,מחויטת,מחוייט,מחוייטים,tailored"],
+  ["jogger", "טרנינג,ג'וגר,jogger"],
+  ["legging", "טייץ,טייצים,leggings"]
+];
+const Q_COLOURS = {
+  black:"שחור,שחורה,שחורים,שחורות,black", white:"לבן,לבנה,לבנים,לבנות,white", ecru:"שמנת,אקרו,אוף וויט,ecru,cream",
+  beige:"בז',בז,קאמל,beige,camel", brown:"חום,חומה,חומים,חומות,brown", grey:"אפור,אפורה,אפורים,אפורות,grey,gray",
+  navy:"נייבי,כחול כהה,navy", blue:"כחול,כחולה,כחולים,כחולות,blue", green:"ירוק,ירוקה,ירוקים,ירוקות,זית,חאקי,green,olive,khaki",
+  red:"אדום,אדומה,אדומים,אדומות,red", burgundy:"בורדו,burgundy", pink:"ורוד,ורודה,ורודים,ורודות,pink",
+  yellow:"צהוב,צהובה,צהובים,צהובות,חרדל,yellow", orange:"כתום,כתומה,כתומים,כתומות,orange", purple:"סגול,סגולה,סגולים,סגולות,purple",
+  metal:"מטאלי,כסף,כסוף,זהב,זהוב,silver,gold", print:"הדפס,מודפס,מודפסים,מודפסת,פסים,פרחוני,print"
+};
+const STOP = new Set(["של","עם","את","גם","או","ו","ב","ל","גזרה","גזרת","בגזרה","בגזרת","בצבע","צבע","לי","רוצה","מחפשת"]);
+const Q_LEN = {mini:"מיני,mini", midi:"מידי,midi", maxi:"מקסי,maxi"};
+// Takes a list of [id, "word,word"] and pulls the longest matches out of the text
+function take(text, list){
+  const found = [];
+  const words = list.flatMap(([id, w]) => w.split(",").map(x => [id, norm(x)])).sort((a,b) => b[1].length - a[1].length);
+  for (const [id, w] of words) {
+    const rx = new RegExp("(^| )[ובלהמש]?" + w.replace(/[.*+?^\${}()|[\]\\]/g, "\\$&") + "(?= |$)", "g");
+    if (rx.test(text)) { found.push(id); text = text.replace(rx, " ").replace(/ +/g, " ").trim(); }
+  }
+  return [text, found];
+}
+function parseQuery(q, g){
+  let t = norm(q), types, cuts, cols, lens, shops;
+  [t, types] = take(t, Q_TYPES);
+  [t, cuts] = take(t, Q_CUTS);
+  [t, cols] = take(t, Object.entries(Q_COLOURS));
+  [t, lens] = take(t, Object.entries(Q_LEN));
+  const shopNames = Object.keys(NAMES).map(k => [k, NAMES[k] + "," + k]);
+  [t, shops] = take(t, shopNames);
+  let words = t.split(" ").filter(w => w && !STOP.has(w));
+  const denim = /(^| )(ג'ינס|גינס|ג'ינסים|jeans|denim|דנים)( |$)/;
+  let type = types[0] || "";
+  const isDenim = words.some(w => denim.test(w));
+  if (isDenim) { words = words.filter(w => !denim.test(w)); if (!type) type = "bottom/long"; }
+  if (cuts.length && !type) type = "bottom/long";
+  let cut = "";
+  if (type === "bottom/long" && cuts.length) {
+    cut = cuts[0];
+    if (g === "men") cut = {wide:"relaxed", baggy:"relaxed", flare:"", legging:""}[cut] ?? cut;
+    else cut = {slim:"skinny", relaxed:"baggy", chino:"straight"}[cut] ?? cut;
+  }
+  if (lens.length) {
+    if (type === "dress") type = "dress/d" + lens[0];
+    else if (type === "bottom/skirt") type += "/" + lens[0];
+    else words.push(...lens.map(l => Q_LEN[l].split(",")[0]));
+  }
+  const path = cut ? type + "/" + cut : type;
+  return {path, base: type, cut, colours: cols, shops, words, isDenim};
+}
+const DENIM_RX = /ג'ינס|גינס|jeans|denim|דנים/;
+const COLOUR_WORDS = Object.fromEntries(Object.entries(Q_COLOURS).map(([k, v]) => [k, v.split(",").map(norm)]));
+function textOf(p){ return p._t || (p._t = norm([p.n, p.en, p.cn, p.v, storeName(p.s)].join(" "))); }
+function matchesQuery(p, a, path){
+  if (path && p.p !== path && !p.p.startsWith(path + "/")) return false;
+  if (a.shops.length && !a.shops.includes(p.s)) return false;
+  // a shop with no colour data can still say the colour in the name
+  if (a.colours.length && !(p.c.length ? p.c.some(c => a.colours.includes(c)) : a.colours.some(c => COLOUR_WORDS[c].some(w => textOf(p).includes(w))))) return false;
+  if (a.isDenim && !(DENIM_RX.test(textOf(p)))) return false;
+  return a.words.every(w => textOf(p).includes(w));
+}
+function pathLabel(path){
+  const names = nodeAt(state.g, path.split("/")).map(n => n.n);
+  return names.length > 1 ? names.slice(1).join(" · ") : names.join("");
+}
+
+function renderTree(){
+  const ul = $("tree"); ul.innerHTML = "";
+  const build = (nodes, parentPath, depth, container) => {
+    for (const n of nodes) {
+      const p = parentPath.concat(n.id);
+      if (ALL.length && !PRESENT.has(state.g + "/" + p.join("/"))) continue;
+      const li = document.createElement("li");
+      const b = document.createElement("button");
+      b.textContent = n.n; if (depth === 0) b.className = "top";
+      b.setAttribute("aria-current", !state.q && state.path.join("/") === p.join("/") ? "true" : "false");
+      b.onclick = () => { closeMenu(); go(p); };
+      li.appendChild(b);
+      if (!state.q && isCutPage(p) && state.path.join("/") === p.join("/")) {
+        const sub = document.createElement("ul"); sub.className = "tree";
+        for (const c of colourCounts(p.join("/"))) {
+          const cli = document.createElement("li"), cb = document.createElement("button");
+          cb.className = "cbtn"; cb.setAttribute("aria-current", state.colors.size === 1 && state.colors.has(c.id) ? "true" : "false");
+          cb.innerHTML = `<span class="dot" style="background:${c.h}"></span>${esc(c.n)} <span class="n">${c.count.toLocaleString("he-IL")}</span>`;
+          cb.onclick = () => { closeMenu(); pickColour(c.id); };
+          cli.appendChild(cb); sub.appendChild(cli);
+        }
+        li.appendChild(sub);
+      }
+      if (n.kids && state.path.slice(0, p.length).join("/") === p.join("/")) {
+        const sub = document.createElement("ul"); sub.className = "tree"; build(n.kids, p, depth+1, sub); li.appendChild(sub);
+      }
+      container.appendChild(li);
+    }
+  };
+  build(TREE[state.g], [], 0, ul);
+}
+
+function card(p){
+  const store = storeName(p.s);
+  const sale = p.old && p.old > p.pr;
+  const src = state.view === "product" && p.img2 ? p.img2 : p.img;
+  const vendor = p.v ? ` <span class="vendor">· ${esc(p.v)}</span>` : "";
+  return `<article class="card"><a href="${esc(p.u)}" target="_blank" rel="noopener">
+    <div class="img">${src ? `<img src="${esc(src)}" alt="${esc(p.n)}" loading="lazy" referrerpolicy="no-referrer">` : ""}${p.new ? '<span class="badge">חדש</span>' : ""}</div>
+    <div class="brand">${esc(store)}${vendor}</div>
+    <div class="name">${esc(p.n)}</div>
+    <div class="meta"><span><span class="${sale ? "price-sale" : ""}">₪${p.pr.toLocaleString("he-IL")}</span>${sale ? `<span class="price-old">₪${p.old.toLocaleString("he-IL")}</span>` : ""}</span><span class="c">${esc(p.cn)}</span></div>
+  </a></article>`;
+}
+
+function render(){
+  document.querySelectorAll(".genders button").forEach(b => b.setAttribute("aria-pressed", b.dataset.g === state.g));
+  const trail = nodeAt(state.g, state.path);
+  const node = trail[trail.length-1];
+
+  const cr = $("crumbs"); cr.innerHTML = "";
+  const home = document.createElement("button"); home.textContent = state.g === "women" ? "נשים" : "גברים";
+  home.onclick = () => go([TREE[state.g][0].id]); cr.appendChild(home);
+  trail.slice(0,-1).forEach((t,i) => {
+    cr.appendChild(document.createTextNode("/"));
+    const b = document.createElement("button"); b.textContent = t.n; b.onclick = () => go(state.path.slice(0,i+1)); cr.appendChild(b);
+  });
+  const asked = state.q ? parseQuery(state.q, state.g) : null;
+  const oneColour = isCutPage(state.path) && state.colors.size === 1 ? COLORS.find(c => state.colors.has(c.id)) : null;
+  $("title").textContent = asked ? "תוצאות חיפוש" : oneColour ? node.n + " · " + oneColour.n : node.n;
+  if (asked) cr.innerHTML = "";
+
+  const chips = $("chips"); chips.innerHTML = "";
+  const colourChips = $("colorChips"); colourChips.innerHTML = "";
+  $("colorGroup").hidden = !asked && isCutPage(state.path);
+  $("understood").innerHTML = "";
+  let parentPath, options;
+  if (node.kids) { parentPath = state.path; options = node.kids; }
+  else if (trail.length > 1) { parentPath = state.path.slice(0,-1); options = trail[trail.length-2].kids; }
+  const key = state.path.join("/");
+  let items = asked ? ALL.filter(p => p.g === state.g && matchesQuery(p, asked, asked.path))
+                    : ALL.filter(p => p.g === state.g && (p.p === key || p.p.startsWith(key + "/")));
+  if (asked) {
+    const parts = [];
+    if (asked.base) parts.push(pathLabel(asked.path));
+    if (asked.isDenim) parts.push("ג'ינס");
+    parts.push(...asked.colours.map(c => COLORS.find(x => x.id === c).n), ...asked.shops.map(storeName), ...asked.words);
+    const note = $("understood");
+    const where = state.everywhere ? "כל גלילות" : TIERS.find(t => t.id === state.tier)?.n || "";
+    note.innerHTML = `חיפשתי: <b>${parts.map(esc).join(" · ")}</b>, ב${state.g === "women" ? "נשים" : "גברים"} · ${esc(where)}`;
+    const wide = document.createElement("button");
+    if (state.everywhere) {
+      wide.textContent = "לחזור רק ל" + TIERS.find(t => t.id === state.tier).n;
+      wide.onclick = () => { backToTier(); render(); };
+    } else {
+      wide.textContent = "לחפש בכל גלילות";
+      wide.onclick = searchEverywhere;
+    }
+    note.appendChild(wide);
+    if (asked.cut && asked.cut !== "nocut") {
+      const others = ALL.filter(p => p.g === state.g && matchesQuery(p, asked, "bottom/long/nocut")).length;
+      if (others) {
+        const b = document.createElement("button");
+        b.textContent = `עוד ${others.toLocaleString("he-IL")} מכנסיים בלי גזרה מצוינת, שאולי גם מתאימים`;
+        const cols = asked.colours;
+        b.onclick = () => { state.colors = new Set(cols.length === 1 ? cols : []); go(["bottom","long","nocut"]); };
+        note.appendChild(b);
+      }
+    }
+  } else if (options) {
+    const base = parentPath.join("/");
+    const count = id => ALL.filter(p => p.g === state.g && (p.p === base + "/" + id || p.p.startsWith(base + "/" + id + "/"))).length;
+    const all = document.createElement("button"); all.className = "chip"; all.textContent = "הכל";
+    all.setAttribute("aria-pressed", node.kids ? "true" : "false"); all.onclick = () => go(parentPath); chips.appendChild(all);
+    for (const o of options) {
+      const n = count(o.id); if (!n && ALL.length) continue;
+      const b = document.createElement("button"); b.className = "chip"; b.textContent = o.n;
+      const p = parentPath.concat(o.id);
+      b.setAttribute("aria-pressed", key === p.join("/") ? "true" : "false");
+      b.onclick = () => go(p); chips.appendChild(b);
+    }
+    if (isCutPage(state.path)) {
+      for (const c of colourCounts(key)) {
+        const b = document.createElement("button"); b.className = "chip";
+        b.innerHTML = `<span class="dot" style="background:${c.h}"></span>${esc(c.n)} <span class="n">${c.count.toLocaleString("he-IL")}</span>`;
+        b.setAttribute("aria-pressed", state.colors.size === 1 && state.colors.has(c.id) ? "true" : "false");
+        b.onclick = () => pickColour(c.id); colourChips.appendChild(b);
+      }
+    }
+  }
+
+  if (state.colors.size) items = items.filter(p => p.c.some(c => state.colors.has(c)));
+  const perStore = {};
+  for (const p of items) perStore[p.s] = (perStore[p.s] || 0) + 1;
+  const stores = Object.keys(perStore);
+  if (state.store && !stores.includes(state.store)) state.store = "";
+  $("brandSel").innerHTML = '<option value="">כל החנויות</option>' +
+    stores.sort((a,b) => storeName(a).localeCompare(storeName(b), "he")).map(s => `<option value="${esc(s)}"${s===state.store?" selected":""}>${esc(storeName(s))} (${perStore[s].toLocaleString("he-IL")})</option>`).join("");
+
+  if (state.store) items = items.filter(p => p.s === state.store);
+  if (state.sort === "low") items.sort((a,b) => a.pr - b.pr);
+  else if (state.sort === "high") items.sort((a,b) => b.pr - a.pr);
+
+  $("count").textContent = items.length.toLocaleString("he-IL") + " פריטים";
+  $("clearBtn").style.visibility = (state.colors.size || state.store || state.q) ? "visible" : "hidden";
+  document.querySelectorAll(".sw").forEach(s => s.setAttribute("aria-pressed", state.colors.has(s.dataset.c)));
+
+  const grid = $("grid");
+  grid.classList.toggle("product", state.view === "product");
+  document.querySelectorAll(".views button").forEach(b => b.setAttribute("aria-pressed", b.dataset.v === state.view));
+  if (LOADING) grid.innerHTML = '<div class="loading" style="grid-column:1/-1">טוען פריטים…</div>';
+  else if (!ALL.length) grid.innerHTML = '<div class="empty" style="grid-column:1/-1">עדיין אין פריטים. האיסוף רץ פעם בלילה.</div>';
+  else if (!items.length) grid.innerHTML = '<div class="empty" style="grid-column:1/-1">אין פריטים שמתאימים לסינון הזה. נסי להסיר צבע, חנות או מילה מהחיפוש.</div>';
+  else grid.innerHTML = items.slice(0, state.shown).map(card).join("");
+  CURRENT = items;
+  updateMore();
+  renderTree();
+}
+
+$("swatches").innerHTML = COLORS.map(c => `<button class="sw" data-c="${c.id}" style="background:${c.h}" aria-label="${c.n}" title="${c.n}" aria-pressed="false"></button>`).join("");
+$("swatches").addEventListener("click", e => {
+  const b = e.target.closest(".sw"); if (!b) return;
+  state.colors.has(b.dataset.c) ? state.colors.delete(b.dataset.c) : state.colors.add(b.dataset.c); state.shown = PAGE; writeHash(); render();
+});
+$("brandSel").onchange = e => { state.store = e.target.value; state.shown = PAGE; render(); };
+$("sortSel").onchange = e => { state.sort = e.target.value; render(); };
+let qt; $("search").oninput = e => { clearTimeout(qt); qt = setTimeout(() => { state.q = e.target.value.trim(); state.shown = PAGE; if (!state.q) backToTier(); render(); }, 200); };
+$("clearBtn").onclick = () => { state.colors.clear(); state.store = ""; state.q = ""; $("search").value = ""; state.shown = PAGE; backToTier(); writeHash(); render(); };
+// "more" only appends cards; rebuilding the grid made phones keep the button in place and jump past the new items
+function updateMore(){
+  const n = Math.min(state.shown, CURRENT.length);
+  $("moreBtn").hidden = CURRENT.length <= state.shown;
+  $("shownNote").textContent = CURRENT.length ? `מוצגים ${n.toLocaleString("he-IL")} מתוך ${CURRENT.length.toLocaleString("he-IL")}` : "";
+}
+$("moreBtn").onclick = () => {
+  const from = state.shown; state.shown += PAGE * 2;
+  $("grid").insertAdjacentHTML("beforeend", CURRENT.slice(from, state.shown).map(card).join(""));
+  updateMore();
+};
+document.querySelectorAll(".views button").forEach(b => b.onclick = () => {
+  state.view = b.dataset.v; try { localStorage.setItem("glilot-view", state.view); } catch (e) {} render();
+});
+document.querySelectorAll(".genders button").forEach(b => b.onclick = () => { state.g = b.dataset.g; state.colors.clear(); state.store = ""; state.path = ["bottom","long"]; fixPath(); go(state.path); });
+function closeMenu(){ $("rail").classList.remove("open"); $("scrim").classList.remove("open"); }
+$("menuBtn").onclick = () => { $("rail").classList.add("open"); $("scrim").classList.add("open"); };
+$("scrim").onclick = closeMenu;
+window.addEventListener("hashchange", () => { const was = state.tier; readHash(); state.tier !== was ? openTier(state.tier) : render(); });
+
+function renderTiers(){
+  const shown = TIERS.filter(t => Object.values(TIER_OF).includes(t.id));
+  $("tiers").innerHTML = shown.map(t => `<button data-t="${t.id}" aria-pressed="${t.id === state.tier}">${esc(t.n)}</button>`).join("");
+  $("tiers").querySelectorAll("button").forEach(b => b.onclick = () => openTier(b.dataset.t));
+}
+const storesOf = tier => Object.keys(STORES).filter(s => TIER_OF[s] === tier);
+async function ensure(stores){
+  await Promise.all(stores.filter(s => !LOADED[s]).map(async s => {
+    const list = await fetch(`data/${s}.json` + VERSION).then(r => r.ok ? r.json() : []).catch(() => []);
+    const seen = new Set(), kept = [];
+    for (const p of list) {
+      if (p.p === "bottom/long") p.p = "bottom/long/nocut";
+      const img = (p.img || "").split("?")[0];
+      const k1 = p.g + "|" + p.s + "|" + (img || p.u), k2 = p.g + "|" + p.s + "|" + p.n + "|" + (p.cn || "") + "|" + p.pr;
+      if (seen.has(k1) || seen.has(k2)) continue;
+      seen.add(k1); seen.add(k2); kept.push(p);
+    }
+    LOADED[s] = kept;
+  }));
+}
+// Puts the open group's items into ALL, one from each shop in turn, so no shop swamps the page
+function rebuild(){
+  const stores = state.everywhere ? Object.keys(STORES).filter(s => TIER_OF[s] !== "sport") : storesOf(state.tier);
+  const groups = {};
+  for (const f of stores) for (const p of LOADED[f] || []) (groups[p.s] = groups[p.s] || []).push(p);
+  const order = Object.keys(groups), longest = Math.max(0, ...order.map(s => groups[s].length));
+  ALL = [];
+  for (let i = 0; i < longest; i++) for (const s of order) if (i < groups[s].length) ALL.push(groups[s][i]);
+  PRESENT = new Set();
+  for (const p of ALL) { const bits = p.p.split("/"); for (let i = 1; i <= bits.length; i++) PRESENT.add(p.g + "/" + bits.slice(0, i).join("/")); }
+  const dates = stores.map(s => STORES[s].updated).filter(Boolean).sort();
+  $("updated").textContent = dates.length ? "עודכן לאחרונה: " + new Date(dates[0].replace("Z", ":00Z")).toLocaleString("he-IL", {dateStyle:"short", timeStyle:"short"}) +
+    " · " + stores.map(s => `${STORES[s].name} ${STORES[s].count.toLocaleString("he-IL")}`).join(" · ") + " · בתצוגת פריט, חנות שאין לה תמונה על רקע לבן מוצגת עם התמונה הרגילה" : "";
+}
+// A group may not sell what was open before (shoe shops have no trousers)
+function fixPath(){
+  if (!ALL.length || PRESENT.has(state.g + "/" + state.path.join("/"))) return;
+  const first = TREE[state.g].find(n => PRESENT.has(state.g + "/" + n.id));
+  if (first) state.path = [first.id];
+}
+function backToTier(){ if (state.everywhere) { state.everywhere = false; rebuild(); fixPath(); } }
+async function show(stores){
+  const token = ++loadToken;
+  LOADING = true; renderTiers(); render();
+  await ensure(stores);
+  if (token !== loadToken) return;
+  LOADING = false; rebuild(); fixPath(); state.shown = PAGE; renderTiers(); writeHash(); render();
+}
+function openTier(id){
+  state.tier = id; state.everywhere = false; state.store = "";
+  try { localStorage.setItem("glilot-tier", id); } catch (e) {}
+  show(storesOf(id));
+}
+function searchEverywhere(){
+  state.everywhere = true;
+  show(Object.keys(STORES).filter(s => TIER_OF[s] !== "sport"));
+}
+
+(async () => {
+  readHash(); render();
+  try {
+    VERSION = "?v=" + Date.now().toString(36).slice(0, -4);
+    const idx = await (await fetch("data/index.json" + VERSION)).json();
+    STORES = idx.stores || {}; NAMES = idx.names || {}; TIER_OF = idx.tiers || {};
+    const available = TIERS.filter(t => storesOf(t.id).length);
+    if (!available.some(t => t.id === state.tier)) state.tier = available[0].id;
+    openTier(state.tier);
+  } catch (e) {
+    $("grid").innerHTML = '<div class="empty" style="grid-column:1/-1">לא הצלחתי לטעון את הפריטים. נסי לרענן את העמוד.</div>';
+  }
+})();
+</script>
+</body>
+</html>
