@@ -7,6 +7,9 @@ on:
       stores:
         description: "Stores to collect (blank = all, none = only publish the page)"
         required: false
+      force:
+        description: "Stores whose count may drop by more than half this time (a deliberate change, not a broken shop)"
+        required: false
   push:
     branches: [main]
     paths: [index.html]
@@ -28,6 +31,7 @@ jobs:
         env:
           GLILOT_OUT: ${{ github.workspace }}/_site/data
           STORES: ${{ github.event.inputs.stores }}
+          GLILOT_FORCE: ${{ github.event.inputs.force }}
         run: python3 scripts/collect.py $STORES
       - name: Publish, keeping a single commit so the repository does not grow
         run: |

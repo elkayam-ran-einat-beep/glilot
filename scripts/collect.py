@@ -36,7 +36,7 @@ def main(names):
             log(f"!! {s} failed: {ex}"); continue
         path = os.path.join(OUT, f"{s}.json")
         prev = index["stores"].get(s, {}).get("count", 0)
-        if len(items) < max(20, prev * 0.5):
+        if len(items) < max(20, prev * 0.5) and s not in os.environ.get("GLILOT_FORCE", "").split():
             log(f"!! {s}: only {len(items)} items (previously {prev}), keeping old file"); continue
         with open(path, "w", encoding="utf-8") as f: json.dump(items, f, ensure_ascii=False, separators=(",",":"))
         index["stores"][s] = {"name": STORES[s], "count": len(items),
