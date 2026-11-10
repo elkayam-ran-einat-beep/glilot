@@ -37,7 +37,7 @@ SHOPS = {
             "STR_MUNDO_INV_ABRIGOS": ["coat"], "STR_MUNDO_INV_VESTIDOS_TESTPRIMERNIVEL": ["dress"],
             "STR_MUNDO_INV_SHORTS_TESTPRIMERNIVEL": ["bottom", "short"], "STR_MUNDO_INV_AMERICANAS": ["jacket", "blazer"],
             "STR_MUNDO_INV_ZAPATOS_TODOS": ["shoes"], "STR_MUNDO_INV_BOLSOS_": ["acc", "bag"], "STR_MUNDO_INV_CINTURONES": ["acc", "belt"]},
-      model=["a1", "a2", "a3", "a15", "a16"], flat=["m1", "s1"], width=""),
+      model=["a1", "a2", "a3", "a15", "a16"], flat=["m1", "s1"], width="?w=563"),
   "oysho": dict(host="oysho", store=64009652, catalog=60361120,
       genders={"VER_POR_PRODUCTO": "women"},
       keys={"PR_PANTALONES": L, "PR_TOPS": ["top"], "PR_CHAQUETAS": ["jacket"], "PR_VESTIDOS_MONOS": ["dress"],
@@ -62,7 +62,7 @@ def photos(xmedia, colour_id, cfg):
         for m in it.get("medias", []):
             e = m.get("extraInfo") or {}
             if e.get("deliveryUrl"): by.setdefault(e.get("originalName"), e["deliveryUrl"])
-    def url(u): return u.split("?")[0] + cfg["width"] if cfg["width"] else u
+    def url(u): return u.split("?")[0] + cfg["width"]
     model = next((by[n] for n in cfg["model"] if n in by), None)
     flat = next((by[n] for n in cfg["flat"] if n in by), None)
     main = model or flat or next((u for n, u in by.items() if n and not n.startswith("r")), None)   # r = colour swatch
