@@ -136,9 +136,9 @@ def classify(name, g, family=""):
 COLORS = [
   ("black","שחור","#1b1b1b",["black","jet","שחור","בלאק"]),
   ("white","לבן","#fbfbf9",["white","optic white","לבן","וייט","ווייט"]),
-  ("ecru","שמנת","#ece4d4",["ecru","cream","off-white","off white","oyster","vanilla","ivory","bone","oatmeal","שמנת","אוף וויט","אוף-וויט","אקרו","קרם","ניוטרל"]),
-  ("beige","בז'","#cfb99a",["beige","sand","stone","camel","taupe","mink","nude","biscuit","khaki beige","בז'","בז","חול","קאמל","טאופ","ניוד","אבן","שמפניה","מוקה"]),
-  ("brown","חום","#6e4b35",["brown","chocolate","tan","cognac","coffee","mocha","chestnut","caramel","toffee","קרמל","טופי","חום","שוקולד","קוניאק"]),
+  ("ecru","שמנת","#ece4d4",["ecru","cream","off-white","off white","oyster","vanilla","ivory","bone","oatmeal","שמנת","אוף וויט","אוף-וויט","אקרו","קרם","ניוטרל","וניל"]),
+  ("beige","בז'","#cfb99a",["beige","sand","stone","camel","taupe","mink","nude","biscuit","khaki beige","בז'","בז","חול","קאמל","טאופ","ניוד","אבן","שמפניה","מוקה","מינק"]),
+  ("brown","חום","#6e4b35",["brown","chocolate","tan","cognac","coffee","mocha","chestnut","caramel","toffee","קרמל","טופי","חום","שוקולד","קוניאק","קקאו","קפה"]),
   ("grey","אפור","#9a9893","grey gray charcoal anthracite marl silver-grey אפור אנתרציט פחם מלאנג' גריי".split()),
   ("navy","כחול נייבי","#23304a",["navy","נייבי","כחול כהה"]),
   ("blue","כחול","#5f7fa6",["blue","indigo","denim","sky","cobalt","azure","turquoise","כחול","תכלת","טורקיז","ג'ינס","גינס","אינדיגו","בלו","דנים"]),
@@ -146,7 +146,7 @@ COLORS = [
   ("red","אדום","#a3252a",["red","scarlet","אדום"]),
   ("burgundy","בורדו","#5e1a26",["burgundy","maroon","wine","bordeaux","oxblood","marsala","מרסלה","בורדו","יין"]),
   ("pink","ורוד","#e3b5b8",["pink","fuchsia","rose","blush","raspberry","magenta","פטל","ורוד","פוקסיה"]),
-  ("yellow","צהוב","#e2c443",["yellow","mustard","lemon","צהוב","חרדל","בננה","לימון"]),
+  ("yellow","צהוב","#e2c443",["yellow","mustard","lemon","ochre","צהוב","חרדל","בננה","לימון","אוכרה"]),
   ("orange","כתום","#d07a3a",["orange","rust","coral","terracotta","כתום","חמרה","קורל","טרקוטה"]),
   ("purple","סגול","#7d5a8c",["purple","lilac","mauve","violet","plum","lavender","aubergine","חציל","סגול","לילך","לבנדר"]),
   ("metal","מטאלי","#c0b283",["silver","gold","metallic","bronze","pewter","כסף","כסוף","זהב","מטאלי"]),
@@ -157,7 +157,7 @@ _HEX = {"black":(27,27,27),"white":(250,250,248),"ecru":(236,228,212),"beige":(2
         "yellow":(226,196,67),"orange":(208,122,58),"purple":(125,90,140)}
 
 def color_families(name, hexcode=None):
-    s = (name or "").lower(); out = []
+    s = re.sub(r"[֑-ׇ]", "", (name or "").lower()).replace("‑", "-"); out = []   # Oysho writes some colours with vowel points
     for cid, _, _, words in COLORS:
         # Hebrew colour words must start a word ("כחול" must not count as "חול")
         if any((w.lower() in s) if w.isascii() else re.search(r"(?<![\u05d0-\u05ea])" + re.escape(w), s) for w in words): out.append(cid)

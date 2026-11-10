@@ -11,7 +11,7 @@ FITS = [(r"WIDE.?LEG|PALAZZO", "wide"), (r"BARREL|BAGGY|MOM|BALLOON|BOMBACHO", "
         (r"VESTIR|TAILOR|SASTRE", "tailored"), (r"CHINO", "chino"), (r"SLIM", "slim")]
 MEN_FIX = {"baggy": "relaxed", "wide": "relaxed", "flare": None}
 WOMEN_FIX = {"slim": "skinny", "chino": "straight"}
-SKIP_NAME = re.compile(r"רחצה|נססר|טואלט|פיג'מ|פיג׳מ|חזיי?ה|תחתונ|הריון", re.I)
+SKIP_NAME = re.compile(r"רחצה|נססר|טואלט|פיג'מ|פיג׳מ|חזיי?[הת]|תחתונ|הריון", re.I)
 
 SHOPS = {
   "pullandbear": dict(host="pullandbear", store=25009552, catalog=20309459,
@@ -44,7 +44,7 @@ SHOPS = {
             "PR_CAMISETAS": ["top", "tee"], "PR_SHORTS": ["bottom", "short"], "PR_FALDAS": ["bottom", "skirt"],
             "PR_SUDADERAS": ["top", "hood"], "PR_POLOS": ["top", "polo"], "PR_PUNTO": ["top", "knit"],
             "PR_CAMISAS_SOBRECAMISAS": ["top"], "PR_CALZADO": ["shoes"], "PR_BOLSOS_NECESERES": ["acc", "bag"]},
-      model=["p1", "t1", "k1", "a1"], flat=["m1", "d1"], width="?w=563"),
+      model=["p1", "t1", "k1", "a1"], flat=["m1", "d1"], width="?w=563", skip_paths={"bottom/long/legging"}),   # its leggings are sportswear
 }
 
 def key(c): return (c.get("key") or "").split("#")[0]   # Oysho adds display flags after '#'
@@ -114,7 +114,15 @@ def collect_shop(sid, log):
             try: items.extend(product_items(sid, cfg, b, owner))
             except Exception as ex: log(f"{sid} product {b.get('id')}: {type(ex).__name__} {ex}")
         time.sleep(0.4)
-    return items
+    # The same garment sits in several product bundles: keep it once, as the portal page would
+    seen, kept = set(), []
+    for it in items:
+        if it["p"] in cfg.get("skip_paths", ()): continue
+        k1, k2 = (it["g"], it["img"].split("?")[0]), (it["g"], it["n"], it["cn"], it["pr"])
+        if k1 in seen or k2 in seen: continue
+        seen.update((k1, k2)); kept.append(it)
+    log(f"{sid}: {len(kept)} of {len(items)} kept after removing repeats")
+    return kept
 
 def product_items(sid, cfg, b, owner):
     out = []
