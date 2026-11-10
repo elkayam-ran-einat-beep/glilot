@@ -44,7 +44,7 @@ SHOPS = {
             "PR_CAMISETAS": ["top", "tee"], "PR_SHORTS": ["bottom", "short"], "PR_FALDAS": ["bottom", "skirt"],
             "PR_SUDADERAS": ["top", "hood"], "PR_POLOS": ["top", "polo"], "PR_PUNTO": ["top", "knit"],
             "PR_CAMISAS_SOBRECAMISAS": ["top"], "PR_CALZADO": ["shoes"], "PR_BOLSOS_NECESERES": ["acc", "bag"]},
-      model=["p1", "t1", "k1", "a1"], flat=["m1", "d1"], width="?w=563", skip_paths={"bottom/long/legging"}),   # its leggings are sportswear
+      model=["p1", "t1", "k1", "a1"], flat=["m1", "d1"], width="?w=563", skip_paths={"bottom/long/legging"}, skip_name=r"טייץ|legging"),   # its leggings are sportswear
 }
 
 def key(c): return (c.get("key") or "").split("#")[0]   # Oysho adds display flags after '#'
@@ -131,6 +131,7 @@ def product_items(sid, cfg, b, owner):
     det = p.get("detail") or {}
     name = b.get("name") or p.get("name") or ""
     if not name or SKIP_NAME.search(name): return out
+    if cfg.get("skip_name") and re.search(cfg["skip_name"], name + " " + (b.get("nameEn") or ""), re.I): return out
     path = merge(classify((b.get("nameEn") or "") + " | " + name, g), fb)
     if not path: return out
     slug = b.get("productUrl") or p.get("productUrl") or ""
