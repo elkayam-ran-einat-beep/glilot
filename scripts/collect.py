@@ -8,6 +8,7 @@ OUT = os.environ.get("GLILOT_OUT") or os.path.join(HERE, "..", "data")
 STORES = {"zara": "זארה", "golf": "גולף", "castro": "קסטרו", "crazyline": "קרייזי ליין", "massimodutti": "מסימו דוטי",
           "factory54": "פקטורי 54", "interfashion": "אינטרפאשן", "shoofra": "שופרא",
           "delta": "דלתא", "emanuelwear": "עמנואל", "emanuel": "עמנואל", "topten": "טופ טן",
+          "pullandbear": "פול אנד בר", "stradivarius": "סטרדיבריוס", "oysho": "אוישו",
           **{k: v["name"] for k, v in SHOPS.items()}}
 # labels for store ids that a module emits besides its own (Factory 54 carries brands that have their own Glilot store)
 NAMES = {"tommy": "טומי הילפיגר", "ralph": "ראלף לורן", "ck": "קלווין קליין", "lacoste": "לקוסט",
@@ -17,6 +18,7 @@ NAMES = {"tommy": "טומי הילפיגר", "ralph": "ראלף לורן", "ck":
 TIERS = {"zara": "chains", "golf": "chains", "castro": "chains", "crazyline": "chains", "interfashion": "chains",
          "massimodutti": "high", "factory54": "high", "shoofra": "shoes",
          "delta": "afford", "emanuelwear": "high", "emanuel": "shoes", "topten": "shoes",
+         "pullandbear": "afford", "stradivarius": "afford", "oysho": "chains",
          **{k: v["tier"] for k, v in SHOPS.items()}}
 
 def log(m): print(m, flush=True)
