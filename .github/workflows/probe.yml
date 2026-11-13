@@ -2,7 +2,8 @@ name: probe
 on:
   workflow_dispatch:
     inputs:
-      args: {description: "arguments for scripts/probe.py", required: false}
+      args: {description: "arguments for the script", required: false}
+      script: {description: "script in scripts/ to run", required: false, default: probe.py}
 jobs:
   run:
     runs-on: ubuntu-latest
@@ -11,4 +12,5 @@ jobs:
       - uses: actions/checkout@v4
       - env:
           ARGS: ${{ github.event.inputs.args }}
-        run: python3 scripts/probe.py $ARGS
+          SCRIPT: ${{ github.event.inputs.script || 'probe.py' }}
+        run: python3 "scripts/$SCRIPT" $ARGS
