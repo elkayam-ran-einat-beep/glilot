@@ -58,13 +58,42 @@ def _products(base, log):
         _cache[base] = ps
     return _cache[base]
 
-def _genders(p, shop):
+def _genders(p):
+    """What the name, brand or tags say; None when they say nothing."""
     for hay in (p["title"], p.get("vendor") or "", " | ".join(p.get("tags") or [])):
         w, m = bool(WOMEN.search(hay)), bool(MEN.search(hay))
         if w and m: return ["women", "men"]
         if w: return ["women"]
         if m: return ["men"]
-    return [] if shop.get("strict") else ["women"]
+    return None
+
+_sides = {}
+def _collection_genders(base, log):
+    """Product id -> genders, from the shop's own men's and women's collections. Many men's items never say 'men'
+    in their name, tags or brand (Mania, Replay), and without this they would fall to the women's default."""
+    if base not in _sides:
+        cols = []
+        for page in range(1, 20):
+            try: cs = get_json(f"{base}/collections.json?limit=250&page={page}").get("collections") or []
+            except Exception as ex: log(f"{base} collections p{page}: {ex}"); break
+            if not cs: break
+            cols += cs
+        found = {"men": set(), "women": set()}
+        for col in cols:
+            t = (col.get("title") or "") + " " + (col.get("handle") or "")
+            m, w = bool(MEN.search(t)), bool(WOMEN.search(t))
+            if m == w or KIDS.search(t): continue
+            side = "men" if m else "women"
+            for page in range(1, 40):
+                try: ps = get_json(f"{base}/collections/{col['handle']}/products.json?limit=250&page={page}").get("products") or []
+                except Exception as ex: log(f"{base} {col['handle']}: {ex}"); break
+                found[side].update(p["id"] for p in ps)
+                if len(ps) < 250: break
+                time.sleep(0.25)
+            time.sleep(0.25)
+        _sides[base] = {i: [g for g in ("women", "men") if i in found[g]] for i in found["men"] | found["women"]}
+        log(f"   {base}: {len(found['men'])} products in men's collections, {len(found['women'])} in women's")
+    return _sides[base]
 
 def _path(title, g, ptype):
     name = title.replace("׳", "'").replace("״", '"').replace("’", "'")
@@ -80,9 +109,12 @@ class Shop:
 
     def collect(self, log):
         c = self.cfg
-        items, dropped = [], collections.Counter()
+        items, dropped, by_collection = [], collections.Counter(), collections.Counter()
         unsorted_names = []
-        for p in _products(c["base"], log):
+        products = _products(c["base"], log)
+        # The shop's collections are read only when some product's name, brand and tags say nothing about gender
+        sides = _collection_genders(c["base"], log) if any(_genders(p) is None for p in products) else {}
+        for p in products:
             vs = [v for v in p.get("variants", []) if v.get("available")]
             title, ptype, vendor = p["title"], p.get("product_type") or "", (p.get("vendor") or "").strip()
             hint = ptype or " | ".join(p.get("tags") or [])   # shops without a type often say it in their tags
@@ -92,7 +124,11 @@ class Shop:
             if (c.get("skip_type") and re.search(c["skip_type"], ptype)) or (c.get("skip_title") and re.search(c["skip_title"], title)) \
                or (c.get("skip_vendor") and re.search(c["skip_vendor"], vendor)):
                 dropped["shop rule"] += 1; continue
-            genders = _genders(p, c)
+            genders = _genders(p)
+            if genders is None:
+                genders = sides.get(p["id"])
+                if genders: by_collection["+".join(genders)] += 1
+                else: genders = [] if c.get("strict") else ["women"]
             if not genders: dropped["no gender"] += 1; continue
             opts = [o.get("name", "") for o in p.get("options", [])]
             ci = next((i for i, o in enumerate(opts) if COLOUR_OPTION.match(o)), None)
@@ -117,7 +153,7 @@ class Shop:
                 if path == ["bottom", "long"]: it["_d"] = p.get("body_html") or ""
                 items.append(it)
         self._colours_from_pages(items, log)
-        log(f"{self.id}: {len(items)} kept, dropped {dict(dropped)}, not sorted {len(unsorted_names)}: {unsorted_names[:25]}")
+        log(f"{self.id}: {len(items)} kept, gender from the shop's collections {dict(by_collection)}, dropped {dict(dropped)}, not sorted {len(unsorted_names)}: {unsorted_names[:25]}")
         return items
 
     def _colours_from_pages(self, items, log):
