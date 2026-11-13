@@ -55,6 +55,9 @@ nav.rail{position:sticky;top:120px;align-self:start;max-height:calc(100vh - 110p
 .tree button[aria-current="true"]{font-weight:700;text-decoration:underline;text-underline-offset:4px}
 
 main{min-width:0}
+.tierstores{font-size:12px;color:var(--muted);margin:0 0 12px;line-height:1.7}
+.tierstores b{font-weight:500;color:var(--ink)}
+.tierstores:empty{display:none}
 .crumbs{font-size:12px;color:var(--muted);margin-bottom:6px;display:flex;flex-wrap:wrap;gap:6px}
 .crumbs button{color:var(--muted)}
 .crumbs button:hover{color:var(--ink)}
@@ -156,6 +159,7 @@ select{font:inherit;font-size:13px;border:1px solid var(--line);background:var(-
     <ul class="tree" id="tree"></ul>
   </nav>
   <main>
+    <p class="tierstores" id="tierStores"></p>
     <div class="crumbs" id="crumbs"></div>
     <h1 id="title"></h1>
     <div class="chips" id="chips"></div>
@@ -575,6 +579,9 @@ function rebuild(){
   for (let i = 0; i < longest; i++) for (const s of order) if (i < groups[s].length) ALL.push(groups[s][i]);
   PRESENT = new Set();
   for (const p of ALL) { const bits = p.p.split("/"); for (let i = 1; i <= bits.length; i++) PRESENT.add(p.g + "/" + bits.slice(0, i).join("/")); }
+  const names = [...new Set(stores.map(s => STORES[s].name))].sort((a, b) => a.localeCompare(b, "he"));
+  const label = state.everywhere ? "כל גלילות, בלי ספורט" : TIERS.find(t => t.id === state.tier)?.n || "";
+  $("tierStores").innerHTML = names.length ? `<b>${esc(label)}:</b> ${names.map(esc).join(" · ")}` : "";
   const dates = stores.map(s => STORES[s].updated).filter(Boolean).sort();
   $("updated").textContent = dates.length ? "עודכן לאחרונה: " + new Date(dates[0].replace("Z", ":00Z")).toLocaleString("he-IL", {dateStyle:"short", timeStyle:"short"}) +
     " · " + stores.map(s => `${STORES[s].name} ${STORES[s].count.toLocaleString("he-IL")}`).join(" · ") + " · בתצוגת פריט, חנות שאין לה תמונה על רקע לבן מוצגת עם התמונה הרגילה" : "";
