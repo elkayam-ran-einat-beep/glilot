@@ -8,7 +8,7 @@ SHOPS = {
     "renuar":          dict(name="רנואר", base="https://renuar.co.il", tier="afford"),
     "twentyfourseven": dict(name="24/7", base="https://twentyfourseven.co.il", tier="afford"),
     "fox":             dict(name="פוקס", base="https://fox.co.il", tier="afford", strict=True),
-    "mania":           dict(name="מאניה ג'ינס", base="https://www.maniajeans.co.il", tier="chains",
+    "mania":           dict(name="מאניה ג'ינס", base="https://www.maniajeans.co.il", tier="chains", default="men",   # a men's shop
                             swatch=r'href="/products/([^"]+)"[^>]*title="([^"]+)"\s+aria-label="צבע'),
     "itaybrands":      dict(name="איתי ברנדס", base="https://itaybrands.co.il", tier="afford",
                             swatch=r'href="/products/([^"]+)"\s*>\s*<div class="color-swatch" data-tooltip="([^"]+)"'),
@@ -128,7 +128,7 @@ class Shop:
             if genders is None:
                 genders = sides.get(p["id"])
                 if genders: by_collection["+".join(genders)] += 1
-                else: genders = [] if c.get("strict") else ["women"]
+                else: genders = [] if c.get("strict") else [c.get("default", "women")]
             if not genders: dropped["no gender"] += 1; continue
             opts = [o.get("name", "") for o in p.get("options", [])]
             ci = next((i for i, o in enumerate(opts) if COLOUR_OPTION.match(o)), None)
